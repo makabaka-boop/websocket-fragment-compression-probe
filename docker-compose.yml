@@ -1,0 +1,21 @@
+services:
+  echo-ws:
+    build: .
+    image: local/echo-ws:latest
+    container_name: echo-ws
+    # 关闭期限可通过环境注入（测试/联调用短期限，默认 5s）
+    environment:
+      WS_HOST: 0.0.0.0
+      WS_PORT: 8080
+      WS_CLOSE_TIMEOUT: ${WS_CLOSE_TIMEOUT:-5}
+    ports:
+      - "8080:8080"
+    restart: unless-stopped
+    # compose 里唯一的服务/容器；CMD 即唯一监听进程
+    init: true
+    healthcheck:
+      test: ["CMD", "python", "-m", "app.healthcheck"]
+      interval: 10s
+      timeout: 4s
+      retries: 3
+      start_period: 2s
