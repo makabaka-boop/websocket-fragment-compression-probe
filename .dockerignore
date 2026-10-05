@@ -1,0 +1,8 @@
+.git
+__pycache__
+*.pyc
+*.log
+compose.yaml
+Dockerfile
+test_ws_echo.py
+README.md

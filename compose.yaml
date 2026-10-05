@@ -1,0 +1,28 @@
+# The compose project runs exactly one listening process: ws-echo.
+# The test runner below is a one-shot client (profile "test"), not a listener.
+services:
+  ws-echo:
+    build: .
+    environment:
+      WS_PORT: "8080"                # listening port inside the container
+      WS_CLOSE_DEADLINE_MS: "1500"   # injectable close-handshake deadline
+    ports:
+      - "127.0.0.1:18080:8080"
+    restart: unless-stopped
+
+  ws-echo-tests:
+    build: .
+    profiles: ["test"]
+    depends_on:
+      - ws-echo
+    volumes:
+      - ./test_ws_echo.py:/app/test_ws_echo.py:ro
+    command:
+      - python
+      - /app/test_ws_echo.py
+      - --host
+      - ws-echo
+      - --port
+      - "8080"
+      - --close-deadline-ms
+      - "1500"
